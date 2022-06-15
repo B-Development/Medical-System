@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\libs\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\libs\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -68,8 +71,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\EventManager.cs" />
+    <Compile Include="Events\ItemEquipEvent.cs" />
+    <Compile Include="Events\PlayerManager.cs" />
     <Compile Include="Main.cs" />
+    <Compile Include="Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
