@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ULR.MedicalSystem
 {
-    [HarmonyPatch(typeof(PlayerLife), "tellDeath")]
+    [HarmonyPatch(typeof(PlayerLife), "ReceiveDeath")]
     public class PlayerPatches
     {
         internal static DeathHandler onDeath;
