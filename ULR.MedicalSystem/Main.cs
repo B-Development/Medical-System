@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
+using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
@@ -11,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ULR.MedicalSystem.Events;
 using ULR.MedicalSystem.Patches;
+using UnityEngine;
 
 namespace ULR.MedicalSystem
 {
@@ -19,6 +21,7 @@ namespace ULR.MedicalSystem
         public static Main Instance { get; set; }
         public Dictionary<CSteamID, bool> DownedPlayers { get; set; }
         public Dictionary<CSteamID, bool> DownedInvincivility { get; set; }
+        public Dictionary<CSteamID, bool> RevivedPlayers { get; set; }
         public EventManager Manager { get; set; }
         public Harmony harmony;
 
@@ -31,6 +34,8 @@ namespace ULR.MedicalSystem
 
             DownedPlayers = new Dictionary<CSteamID, bool>();
             DownedInvincivility = new Dictionary<CSteamID, bool>();
+            RevivedPlayers = new Dictionary<CSteamID, bool>();
+
             Manager = new EventManager(this);
 
             U.Events.OnPlayerConnected += Manager.OnPlayerJoined;
@@ -38,6 +43,7 @@ namespace ULR.MedicalSystem
 
             ItemManager.onTakeItemRequested += Manager.OnPickupItem;
             EffectManager.onEffectButtonClicked += Manager.OnButtonClicked;
+            UnturnedPlayerEvents.OnPlayerUpdatePosition += Manager.OnPlayerMoved;
         }
 
         protected override void Unload()
@@ -55,6 +61,7 @@ namespace ULR.MedicalSystem
 
             ItemManager.onTakeItemRequested -= Manager.OnPickupItem;
             EffectManager.onEffectButtonClicked -= Manager.OnButtonClicked;
+            UnturnedPlayerEvents.OnPlayerUpdatePosition -= Manager.OnPlayerMoved;
         }
     }
 }

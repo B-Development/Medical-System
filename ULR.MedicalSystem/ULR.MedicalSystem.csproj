@@ -79,6 +79,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Patches\StanceChangePatch.cs" />
     <Compile Include="Patches\DoDamagePatch.cs" />
+    <Compile Include="Patches\SuicidePatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

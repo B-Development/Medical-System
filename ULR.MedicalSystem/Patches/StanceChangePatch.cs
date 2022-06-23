@@ -31,24 +31,4 @@ namespace ULR.MedicalSystem.Patches
             }
         }
     }
-
-    /*
-    [HarmonyLib.HarmonyPatch(typeof(PlayerStance), "simulate")]
-    internal static class StanceChangePatch
-    {
-        [HarmonyLib.HarmonyPrefix]
-        [System.Obsolete]
-        public static void simulate(PlayerStance __instance)
-        {
-            var player = UnturnedPlayer.FromPlayer(__instance.player);
-            if (__instance.stance != EPlayerStance.PRONE && Main.downed.ContainsKey(player.CSteamID))
-            {
-                player.Player.channel.send("tellStance", player.CSteamID, (ESteamPacket)15, new object[1]
-                {
-                (object) 5
-                });
-            }
-        }
-    }
-    */
 }

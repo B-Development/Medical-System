@@ -59,6 +59,17 @@ namespace ULR.MedicalSystem.Patches
 
                     EffectManager.sendUIEffect(9770, 9770, uplayer.CSteamID, false, "You are injured", string.Empty, "Respawn in: " + Main.Instance.Configuration.Instance.DownedTimer + "s", "Suicide");
                     EffectManager.sendEffectClicked("Suicide_Button");
+
+                    List<Player> players = new List<Player>();
+                    PlayerTool.getPlayersInRadius(uplayer.Position, 5, players);
+                    foreach (var p in players)
+                    {
+                        var steamid = UnturnedPlayer.FromPlayer(p).CSteamID;
+                        if (steamid != uplayer.CSteamID)
+                        {
+                            EffectManager.sendUIEffect(9771, 9771, steamid, false, "Player in need", $"Use surrender to revive {uplayer.DisplayName}");
+                        }
+                    }
                     return false;
                 }
                 else
@@ -116,6 +127,14 @@ namespace ULR.MedicalSystem.Patches
                     pl.Player.movement.pluginSpeedMultiplier = 1;
                     pl.Player.movement.pluginJumpMultiplier = 1;
                     pl.Suicide();
+
+                    List<Player> players = new List<Player>();
+                    PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steamid).Position, 5, players);
+                    foreach (var player in players)
+                    {
+                        var ePlayer = UnturnedPlayer.FromPlayer(player);
+                        EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
+                    }
                     break;
                 }
             }
@@ -126,6 +145,14 @@ namespace ULR.MedicalSystem.Patches
                 pl.Player.movement.pluginSpeedMultiplier = 1;
                 pl.Player.movement.pluginJumpMultiplier = 1;
                 pl.Suicide();
+
+                List<Player> players = new List<Player>();
+                PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steamid).Position, 5, players);
+                foreach (var player in players)
+                {
+                    var ePlayer = UnturnedPlayer.FromPlayer(player);
+                    EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
+                }
             }
         }
     }
