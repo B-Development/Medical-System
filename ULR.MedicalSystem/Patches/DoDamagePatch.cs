@@ -76,6 +76,18 @@ namespace ULR.MedicalSystem.Patches
                 {
                     if (Main.Instance.Configuration.Instance.KillDownedPlayers)
                     {
+                        Main.Instance.DownedPlayers.Remove(uplayer.CSteamID);
+
+                        uplayer.Player.movement.pluginSpeedMultiplier = 1;
+                        uplayer.Player.movement.pluginJumpMultiplier = 1;
+
+                        List<Player> players = new List<Player>();
+                        PlayerTool.getPlayersInRadius(uplayer.Position, 5, players);
+                        foreach (var player in players)
+                        {
+                            var ePlayer = UnturnedPlayer.FromPlayer(player);
+                            EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
+                        }
                         return true;
                     }
                     else
