@@ -44,6 +44,7 @@ namespace ULR.MedicalSystem
             ItemManager.onTakeItemRequested += Manager.OnPickupItem;
             EffectManager.onEffectButtonClicked += Manager.OnButtonClicked;
             UnturnedPlayerEvents.OnPlayerUpdatePosition += Manager.OnPlayerMoved;
+            UnturnedPlayerEvents.OnPlayerDeath += Manager.OnPlayerDie;
         }
 
         protected override void Unload()
@@ -52,6 +53,7 @@ namespace ULR.MedicalSystem
 
             DownedPlayers = null;
             DownedInvincivility = null;
+            RevivedPlayers = null;
 
             StopAllCoroutines();
             harmony.UnpatchAll("unturnedliferp.medicalsystem");
@@ -62,6 +64,7 @@ namespace ULR.MedicalSystem
             ItemManager.onTakeItemRequested -= Manager.OnPickupItem;
             EffectManager.onEffectButtonClicked -= Manager.OnButtonClicked;
             UnturnedPlayerEvents.OnPlayerUpdatePosition -= Manager.OnPlayerMoved;
+            UnturnedPlayerEvents.OnPlayerDeath -= Manager.OnPlayerDie;
         }
     }
 }

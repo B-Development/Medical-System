@@ -1,5 +1,7 @@
-﻿using Rocket.Unturned.Player;
+﻿using Rocket.Core.Utils;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
+using Steamworks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,6 +30,22 @@ namespace ULR.MedicalSystem.Events
             player.Player.equipment.onEquipRequested += manager.OnEquipItem;
         }
 
+        public static void OnPlayerDie(this EventManager manager, UnturnedPlayer player, EDeathCause cause, ELimb limb, CSteamID murderer)
+        {
+            if (manager.pluginInstance.DownedPlayers.ContainsKey(player.CSteamID))
+            {
+                player.Player.movement.pluginJumpMultiplier = 1;
+                player.Player.movement.pluginSpeedMultiplier = 1;
+
+                manager.pluginInstance.RevivedPlayers.Add(player.CSteamID, true);
+
+                TaskDispatcher.QueueOnMainThread(() =>
+                {
+                    RemoveRevive(player);
+                }, 1.0f);
+            }
+        }
+
         public static void OnPlayerMoved(this EventManager manager, UnturnedPlayer player, Vector3 position)
         {
             List<Player> players = new List<Player>();
@@ -46,11 +64,11 @@ namespace ULR.MedicalSystem.Events
                         {
                             UnturnedPlayer.FromCSteamID(steamid).Teleport(player);
                         }
-                        if(player.Player.animator.gesture == EPlayerGesture.SURRENDER_START)
+                        if (player.Player.animator.gesture == EPlayerGesture.SURRENDER_START)
                         {
                             Main.Instance.StartCoroutine(ReviveTime(UnturnedPlayer.FromPlayer(p), player, false, Main.Instance.Configuration.Instance.ReviveTime));
                         }
-                        if(player.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
+                        if (player.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
                         {
                             EffectManager.sendEffect(Main.Instance.Configuration.Instance.DefibChargeID, 3, player.Position);
                             Main.Instance.StartCoroutine(ReviveTime(UnturnedPlayer.FromPlayer(p), player, true, Main.Instance.Configuration.Instance.DefibTime));
@@ -59,7 +77,13 @@ namespace ULR.MedicalSystem.Events
                 }
             }
         }
-
+        private static void RemoveRevive(UnturnedPlayer target)
+        {
+            if (target != null)
+            {
+                Main.Instance.RevivedPlayers.Remove(target.CSteamID);
+            }
+        }
         public static IEnumerator ReviveTime(UnturnedPlayer target, UnturnedPlayer reviver, bool defib, int time)
         {
             while (time > 0)
@@ -70,7 +94,7 @@ namespace ULR.MedicalSystem.Events
 
             if (Main.Instance.DownedPlayers.ContainsKey(target.CSteamID))
             {
-                if(defib && reviver.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
+                if (defib && reviver.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
                 {
                     EffectManager.sendEffect(Main.Instance.Configuration.Instance.DefibZapID, 3, target.Position);
                     target.Player.movement.pluginSpeedMultiplier = 1;
@@ -88,7 +112,7 @@ namespace ULR.MedicalSystem.Events
                         EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
                     }
                 }
-                if(reviver.Player.animator.gesture == EPlayerGesture.SURRENDER_START && reviver.Stance != EPlayerStance.CROUCH)
+                if (reviver.Player.animator.gesture == EPlayerGesture.SURRENDER_START && reviver.Stance != EPlayerStance.CROUCH)
                 {
                     target.Player.movement.pluginSpeedMultiplier = 1;
                     target.Player.movement.pluginJumpMultiplier = 1;
