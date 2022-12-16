@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ULR.MedicalSystem.Components;
 using UnityEngine;
 
 namespace ULR.MedicalSystem.Patches
@@ -17,20 +18,25 @@ namespace ULR.MedicalSystem.Patches
     [HarmonyPatch("doDamage")]
     class DoDamagePatch
     {
+        private static Dictionary<CSteamID, bool> ByPassMedical = new Dictionary<CSteamID, bool>();
+
         public static bool Prefix(byte amount, Vector3 newRagdoll, EDeathCause newCause, ELimb newLimb, CSteamID newKiller, ref EPlayerKill kill, bool trackKill, ERagdollEffect newRagdollEffect, bool canCauseBleeding, PlayerLife __instance)
         {
             Player ply = __instance.channel.owner.player;
             UnturnedPlayer uplayer = UnturnedPlayer.FromPlayer(ply);
+
+            if (ByPassMedical.ContainsKey(uplayer.CSteamID))
+            {
+                ByPassMedical.Remove(uplayer.CSteamID);
+                return false;
+            }
             if (ply is null) return false;
-            if (Main.Instance.DownedPlayers.ContainsKey(newKiller))
+            if (Main.Instance.DownedPlayers.ContainsKey(uplayer.CSteamID))
             {
                 UnturnedChat.Say(newKiller, $"You cannot damage {uplayer.CharacterName} while downed.", Color.red);
                 return false;
             }
-            if(newCause == EDeathCause.SUICIDE)
-            {
-                return true;
-            }
+
             if (Main.Instance.DownedInvincivility.ContainsKey(uplayer.CSteamID))
             {
                 return false;
@@ -70,6 +76,11 @@ namespace ULR.MedicalSystem.Patches
                             EffectManager.sendUIEffect(9771, 9771, steamid, false, "Player in need", $"Use surrender to revive {uplayer.DisplayName}");
                         }
                     }
+
+                    var component = uplayer.GetComponent<DownedPlayerComonpent>();
+                    component.newCause = newCause;
+                    component.newLimb = newLimb;
+                    component.killer = newKiller;
                     return false;
                 }
                 else
@@ -138,7 +149,10 @@ namespace ULR.MedicalSystem.Patches
                     EffectManager.askEffectClearByID(9770, steamid);
                     pl.Player.movement.pluginSpeedMultiplier = 1;
                     pl.Player.movement.pluginJumpMultiplier = 1;
-                    pl.Suicide();
+
+                    ByPassMedical.Add(steamid, true);
+                    var component = pl.GetComponent<DownedPlayerComonpent>();
+                    DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, pl.Position, 1000, 1, out EPlayerKill kill, false, false);
 
                     List<Player> players = new List<Player>();
                     PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steamid).Position, 5, players);
@@ -156,7 +170,10 @@ namespace ULR.MedicalSystem.Patches
                 EffectManager.askEffectClearByID(9770, steamid);
                 pl.Player.movement.pluginSpeedMultiplier = 1;
                 pl.Player.movement.pluginJumpMultiplier = 1;
-                pl.Suicide();
+
+                ByPassMedical.Add(steamid, true);
+                var component = pl.GetComponent<DownedPlayerComonpent>();
+                DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, pl.Position, 1000, 1, out EPlayerKill kill, false, false);
 
                 List<Player> players = new List<Player>();
                 PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steamid).Position, 5, players);

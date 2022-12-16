@@ -1,4 +1,5 @@
-﻿using Rocket.Core.Utils;
+﻿using Rocket.API;
+using Rocket.Core.Utils;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
@@ -9,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace ULR.MedicalSystem.Events
 {
@@ -68,7 +70,7 @@ namespace ULR.MedicalSystem.Events
                         {
                             Main.Instance.StartCoroutine(ReviveTime(UnturnedPlayer.FromPlayer(p), player, false, Main.Instance.Configuration.Instance.ReviveTime));
                         }
-                        if (player.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
+                        else if (player.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
                         {
                             EffectManager.sendEffect(Main.Instance.Configuration.Instance.DefibChargeID, 3, player.Position);
                             Main.Instance.StartCoroutine(ReviveTime(UnturnedPlayer.FromPlayer(p), player, true, Main.Instance.Configuration.Instance.DefibTime));
@@ -77,6 +79,7 @@ namespace ULR.MedicalSystem.Events
                 }
             }
         }
+
         private static void RemoveRevive(UnturnedPlayer target)
         {
             if (target != null)
@@ -84,6 +87,7 @@ namespace ULR.MedicalSystem.Events
                 Main.Instance.RevivedPlayers.Remove(target.CSteamID);
             }
         }
+
         public static IEnumerator ReviveTime(UnturnedPlayer target, UnturnedPlayer reviver, bool defib, int time)
         {
             while (time > 0)
@@ -111,6 +115,7 @@ namespace ULR.MedicalSystem.Events
                         var ePlayer = UnturnedPlayer.FromPlayer(player);
                         EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
                     }
+                    PayReviver(reviver, target);
                 }
                 if (reviver.Player.animator.gesture == EPlayerGesture.SURRENDER_START && reviver.Stance != EPlayerStance.CROUCH)
                 {
@@ -128,7 +133,31 @@ namespace ULR.MedicalSystem.Events
                         var ePlayer = UnturnedPlayer.FromPlayer(player);
                         EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
                     }
+                    PayReviver(reviver, target);
                 }
+            }
+        }
+
+        private static void PayReviver(UnturnedPlayer reviver, UnturnedPlayer target)
+        {
+            if (reviver.HasPermission(Main.Instance.Configuration.Instance.RewardPerm))
+            {
+                var amountToBeRewarded = Main.Instance.Configuration.Instance.RewardAmount;
+
+                if (Main.Instance.Configuration.Instance.TakeFromPlayer)
+                {
+                    if (target.Experience <= amountToBeRewarded)
+                    {
+                        amountToBeRewarded = target.Experience;
+                        target.Experience = 0;
+                    }
+                    else
+                    {
+                        target.Experience -= amountToBeRewarded;
+                    }
+                }
+
+                reviver.Experience += amountToBeRewarded;
             }
         }
     }

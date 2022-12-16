@@ -9,6 +9,10 @@ namespace ULR.MedicalSystem
 {
     public class Configuration : IRocketPluginConfiguration
     {
+        public uint RewardAmount;
+        public bool TakeFromPlayer;
+        public string RewardPerm;
+
         public bool KillDownedPlayers;
         public byte DownedPlayerHealth;
         public float DownedPlayerMovementSpeed;
@@ -28,6 +32,10 @@ namespace ULR.MedicalSystem
 
         public void LoadDefaults()
         {
+            RewardAmount = 250;
+            TakeFromPlayer = false;
+            RewardPerm = "medical.revivereward";
+
             KillDownedPlayers = true;
             DownedPlayerHealth = 10;
             DownedPlayerMovementSpeed = 0;

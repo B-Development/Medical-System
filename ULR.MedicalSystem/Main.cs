@@ -2,17 +2,10 @@
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
-using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ULR.MedicalSystem.Events;
-using ULR.MedicalSystem.Patches;
-using UnityEngine;
 
 namespace ULR.MedicalSystem
 {
