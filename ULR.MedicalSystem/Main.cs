@@ -19,9 +19,10 @@ namespace ULR.MedicalSystem
     public class Main : RocketPlugin<Configuration>
     {
         public static Main Instance { get; set; }
-        public Dictionary<CSteamID, bool> DownedPlayers { get; set; }
-        public Dictionary<CSteamID, bool> DownedInvincivility { get; set; }
-        public Dictionary<CSteamID, bool> RevivedPlayers { get; set; }
+        public Dictionary<CSteamID, bool> DownedPlayers = new Dictionary<CSteamID, bool>();
+        public Dictionary<CSteamID, bool> DownedInvincivility = new Dictionary<CSteamID, bool>();
+        public Dictionary<CSteamID, bool> RevivedPlayers = new Dictionary<CSteamID, bool>();
+        public Dictionary<CSteamID, bool> ByPassMedical = new Dictionary<CSteamID, bool>();
         public EventManager Manager { get; set; }
         public Harmony harmony;
 
@@ -31,10 +32,6 @@ namespace ULR.MedicalSystem
 
             harmony = new Harmony("unturnedliferp.medicalsystem");
             harmony.PatchAll();
-
-            DownedPlayers = new Dictionary<CSteamID, bool>();
-            DownedInvincivility = new Dictionary<CSteamID, bool>();
-            RevivedPlayers = new Dictionary<CSteamID, bool>();
 
             Manager = new EventManager(this);
 

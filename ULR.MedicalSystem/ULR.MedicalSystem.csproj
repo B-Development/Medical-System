@@ -71,6 +71,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CallCommand.cs" />
+    <Compile Include="Components\DownedPlayerComponent.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Events\EventManager.cs" />
     <Compile Include="Events\ItemEvents.cs" />
@@ -79,7 +81,6 @@
     <Compile Include="Main.cs" />
     <Compile Include="Patches\StanceChangePatch.cs" />
     <Compile Include="Patches\DoDamagePatch.cs" />
-    <Compile Include="Patches\SuicidePatch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

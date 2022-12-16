@@ -77,6 +77,7 @@ namespace ULR.MedicalSystem.Events
                 }
             }
         }
+
         private static void RemoveRevive(UnturnedPlayer target)
         {
             if (target != null)
@@ -84,6 +85,7 @@ namespace ULR.MedicalSystem.Events
                 Main.Instance.RevivedPlayers.Remove(target.CSteamID);
             }
         }
+
         public static IEnumerator ReviveTime(UnturnedPlayer target, UnturnedPlayer reviver, bool defib, int time)
         {
             while (time > 0)

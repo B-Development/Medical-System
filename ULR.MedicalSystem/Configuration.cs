@@ -9,6 +9,8 @@ namespace ULR.MedicalSystem
 {
     public class Configuration : IRocketPluginConfiguration
     {
+        public string DownedReviveCall;
+
         public bool KillDownedPlayers;
         public byte DownedPlayerHealth;
         public float DownedPlayerMovementSpeed;
@@ -28,6 +30,8 @@ namespace ULR.MedicalSystem
 
         public void LoadDefaults()
         {
+            DownedReviveCall = "medical.revivecall";
+
             KillDownedPlayers = true;
             DownedPlayerHealth = 10;
             DownedPlayerMovementSpeed = 0;

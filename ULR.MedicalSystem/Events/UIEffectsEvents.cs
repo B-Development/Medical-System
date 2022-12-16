@@ -1,10 +1,12 @@
-﻿using Rocket.Unturned.Player;
+﻿using Rocket.Core.Logging;
+using Rocket.Unturned.Player;
 using SDG.Unturned;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ULR.MedicalSystem.Components;
 
 namespace ULR.MedicalSystem.Events
 {
@@ -12,14 +14,25 @@ namespace ULR.MedicalSystem.Events
     {
         public static void OnButtonClicked(this EventManager manager, Player player, string buttonName)
         {
-            var ePlayer = UnturnedPlayer.FromPlayer(player);
-            if (buttonName == "Suicide_Button" && Main.Instance.DownedPlayers.ContainsKey(ePlayer.CSteamID))
+            var uPlayer = UnturnedPlayer.FromPlayer(player);
+            if (buttonName == "Suicide_Button" && Main.Instance.DownedPlayers.ContainsKey(uPlayer.CSteamID))
             {
-                Main.Instance.DownedPlayers.Remove(ePlayer.CSteamID);
-                EffectManager.askEffectClearByID(9770, ePlayer.CSteamID);
-                ePlayer.Player.life.askSuicide(ePlayer.CSteamID);
-                ePlayer.Player.movement.pluginSpeedMultiplier = 1;
-                ePlayer.Player.movement.pluginJumpMultiplier = 1;
+                Main.Instance.DownedPlayers.Remove(uPlayer.CSteamID);
+                EffectManager.askEffectClearByID(9770, uPlayer.Player.channel.GetOwnerTransportConnection());
+                uPlayer.Player.movement.pluginSpeedMultiplier = 1;
+                uPlayer.Player.movement.pluginJumpMultiplier = 1;
+
+                Main.Instance.ByPassMedical.Add(uPlayer.CSteamID, true);
+                var component = uPlayer.GetComponent<DownedPlayerComonpent>();
+                DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, uPlayer.Position, 1000, 1, out EPlayerKill kill, false, false);
+
+                List<Player> players = new List<Player>();
+                PlayerTool.getPlayersInRadius(uPlayer.Position, 5, players);
+                foreach (var eplayer in players)
+                {
+                    var ePlayer = UnturnedPlayer.FromPlayer(eplayer);
+                    EffectManager.askEffectClearByID(9771, ePlayer.Player.channel.GetOwnerTransportConnection());
+                }
             }
         }
     }
