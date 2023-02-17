@@ -20,14 +20,6 @@ namespace ULR.MedicalSystem
         public string RevivePermission;
         public ushort ReviveItem;
         public byte RevivedPlayerHealth;
-        public int ReviveTime;
-
-        public ushort DefibID;
-        public ushort DefibZapID;
-        public ushort DefibChargeID;
-        public string DefibPermission;
-        public byte DefibedPlayerHealth;
-        public int DefibTime;
 
         public void LoadDefaults()
         {
@@ -42,14 +34,6 @@ namespace ULR.MedicalSystem
             RevivePermission = "medical.revive";
             ReviveItem = 387;
             RevivedPlayerHealth = 50;
-            ReviveTime = 10;
-
-            DefibID = 9800;
-            DefibZapID = 9802;
-            DefibChargeID = 9801;
-            DefibPermission = "medical.defib";
-            DefibedPlayerHealth = 75;
-            DefibTime = 5;
         }
     }
 }
