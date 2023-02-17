@@ -18,6 +18,7 @@ namespace ULR.MedicalSystem
         public int DownedInvicibilityTimer;
 
         public string RevivePermission;
+        public ushort ReviveItem;
         public byte RevivedPlayerHealth;
         public int ReviveTime;
 
@@ -39,6 +40,7 @@ namespace ULR.MedicalSystem
             DownedInvicibilityTimer = 10;
 
             RevivePermission = "medical.revive";
+            ReviveItem = 387;
             RevivedPlayerHealth = 50;
             ReviveTime = 10;
 

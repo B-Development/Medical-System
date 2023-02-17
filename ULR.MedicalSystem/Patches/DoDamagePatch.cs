@@ -68,7 +68,7 @@ namespace ULR.MedicalSystem.Patches
                     var steamid = UnturnedPlayer.FromPlayer(p).CSteamID;
                     if (steamid != uPlayer.CSteamID)
                     {
-                        EffectManager.sendUIEffect(9771, 9771, steamid, false, "Player in need", $"Use surrender to revive {uPlayer.DisplayName}");
+                        EffectManager.sendUIEffect(9771, 9771, steamid, false, "Player in need", $"Use {(Assets.find(EAssetType.ITEM, Main.Instance.Configuration.Instance.ReviveItem) as ItemAsset)?.itemName} to revive {uPlayer.DisplayName}.");
                     }
                 }
             }
