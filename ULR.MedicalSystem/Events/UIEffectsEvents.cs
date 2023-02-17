@@ -15,24 +15,23 @@ namespace ULR.MedicalSystem.Events
         public static void OnButtonClicked(this EventManager manager, Player player, string buttonName)
         {
             var uPlayer = UnturnedPlayer.FromPlayer(player);
-            if (buttonName == "Suicide_Button" && Main.Instance.DownedPlayers.ContainsKey(uPlayer.CSteamID))
+            if (buttonName != "Suicide_Button" || !Main.Instance.DownedPlayers.ContainsKey(uPlayer.CSteamID)) return;
+
+            Main.Instance.DownedPlayers.Remove(uPlayer.CSteamID);
+            EffectManager.askEffectClearByID(9770, uPlayer.Player.channel.GetOwnerTransportConnection());
+            uPlayer.Player.movement.pluginSpeedMultiplier = 1;
+            uPlayer.Player.movement.pluginJumpMultiplier = 1;
+
+            Main.Instance.ByPassMedical.Add(uPlayer.CSteamID, true);
+            var component = uPlayer.GetComponent<DownedPlayerComonpent>();
+            DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, uPlayer.Position, 1000, 1, out var kill, false, false);
+
+            List<Player> players = new List<Player>();
+            PlayerTool.getPlayersInRadius(uPlayer.Position, 5, players);
+
+            foreach (var ePlayer in players.Select(UnturnedPlayer.FromPlayer))
             {
-                Main.Instance.DownedPlayers.Remove(uPlayer.CSteamID);
-                EffectManager.askEffectClearByID(9770, uPlayer.Player.channel.GetOwnerTransportConnection());
-                uPlayer.Player.movement.pluginSpeedMultiplier = 1;
-                uPlayer.Player.movement.pluginJumpMultiplier = 1;
-
-                Main.Instance.ByPassMedical.Add(uPlayer.CSteamID, true);
-                var component = uPlayer.GetComponent<DownedPlayerComonpent>();
-                DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, uPlayer.Position, 1000, 1, out EPlayerKill kill, false, false);
-
-                List<Player> players = new List<Player>();
-                PlayerTool.getPlayersInRadius(uPlayer.Position, 5, players);
-                foreach (var eplayer in players)
-                {
-                    var ePlayer = UnturnedPlayer.FromPlayer(eplayer);
-                    EffectManager.askEffectClearByID(9771, ePlayer.Player.channel.GetOwnerTransportConnection());
-                }
+                EffectManager.askEffectClearByID(9771, ePlayer.Player.channel.GetOwnerTransportConnection());
             }
         }
     }

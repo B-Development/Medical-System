@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Rocket.Unturned.Chat;
 using ULR.MedicalSystem.Events;
 using ULR.MedicalSystem.Patches;
 using UnityEngine;
@@ -20,7 +21,7 @@ namespace ULR.MedicalSystem
     {
         public static Main Instance { get; set; }
         public Dictionary<CSteamID, bool> DownedPlayers = new Dictionary<CSteamID, bool>();
-        public Dictionary<CSteamID, bool> DownedInvincivility = new Dictionary<CSteamID, bool>();
+        public Dictionary<CSteamID, bool> DownedInvincibility = new Dictionary<CSteamID, bool>();
         public Dictionary<CSteamID, bool> RevivedPlayers = new Dictionary<CSteamID, bool>();
         public Dictionary<CSteamID, bool> ByPassMedical = new Dictionary<CSteamID, bool>();
         public EventManager Manager { get; set; }
@@ -43,13 +44,13 @@ namespace ULR.MedicalSystem
             UnturnedPlayerEvents.OnPlayerUpdatePosition += Manager.OnPlayerMoved;
             UnturnedPlayerEvents.OnPlayerDeath += Manager.OnPlayerDie;
         }
-
+        
         protected override void Unload()
         {
             Instance = null;
 
             DownedPlayers = null;
-            DownedInvincivility = null;
+            DownedInvincibility = null;
             RevivedPlayers = null;
 
             StopAllCoroutines();
@@ -62,6 +63,7 @@ namespace ULR.MedicalSystem
             EffectManager.onEffectButtonClicked -= Manager.OnButtonClicked;
             UnturnedPlayerEvents.OnPlayerUpdatePosition -= Manager.OnPlayerMoved;
             UnturnedPlayerEvents.OnPlayerDeath -= Manager.OnPlayerDie;
+
         }
     }
 }

@@ -50,19 +50,19 @@ namespace ULR.MedicalSystem.Events
         {
             List<Player> players = new List<Player>();
             PlayerTool.getPlayersInRadius(player.Position, 5, players);
-            EffectManager.askEffectClearByID(9771, player.CSteamID);
+            EffectManager.askEffectClearByID(9771, player.Player.channel.GetOwnerTransportConnection());
             foreach (var p in players)
             {
-                var steamid = UnturnedPlayer.FromPlayer(p).CSteamID;
-                if (steamid != player.CSteamID)
+                var steam_id = UnturnedPlayer.FromPlayer(p).CSteamID;
+                if (steam_id != player.CSteamID)
                 {
-                    if (Main.Instance.DownedPlayers.ContainsKey(steamid))
+                    if (Main.Instance.DownedPlayers.ContainsKey(steam_id))
                     {
-                        EffectManager.sendUIEffect(9771, 9771, player.CSteamID, false, "Player in need", $"Use surrender to revive {UnturnedPlayer.FromPlayer(p).DisplayName}");
+                        EffectManager.sendUIEffect(9771, 9771, player.Player.channel.GetOwnerTransportConnection(), false, "Player in need", $"Use surrender to revive {UnturnedPlayer.FromPlayer(p).DisplayName}");
 
                         if (player.Stance == EPlayerStance.CROUCH && player.Player.animator.gesture == EPlayerGesture.SURRENDER_START)
                         {
-                            UnturnedPlayer.FromCSteamID(steamid).Teleport(player);
+                            UnturnedPlayer.FromCSteamID(steam_id).Teleport(player);
                         }
                         if (player.Player.animator.gesture == EPlayerGesture.SURRENDER_START)
                         {
@@ -94,42 +94,43 @@ namespace ULR.MedicalSystem.Events
                 yield return new WaitForSeconds(1);
             }
 
-            if (Main.Instance.DownedPlayers.ContainsKey(target.CSteamID))
+            if (!Main.Instance.DownedPlayers.ContainsKey(target.CSteamID)) yield break;
+
+            if (defib && reviver.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
             {
-                if (defib && reviver.Player.equipment.itemID == Main.Instance.Configuration.Instance.DefibID)
+                EffectManager.sendEffect(Main.Instance.Configuration.Instance.DefibZapID, 3, target.Position);
+                target.Player.movement.pluginSpeedMultiplier = 1;
+                target.Player.movement.pluginJumpMultiplier = 1;
+
+                Main.Instance.RevivedPlayers.Add(target.CSteamID, true);
+                Main.Instance.DownedPlayers.Remove(target.CSteamID);
+                target.Player.life.tellHealth(target.CSteamID, Main.Instance.Configuration.Instance.DefibedPlayerHealth);
+
+                List<Player> players = new List<Player>();
+                PlayerTool.getPlayersInRadius(target.Position, 5, players);
+
+                foreach (var ePlayer in players.Select(UnturnedPlayer.FromPlayer))
                 {
-                    EffectManager.sendEffect(Main.Instance.Configuration.Instance.DefibZapID, 3, target.Position);
-                    target.Player.movement.pluginSpeedMultiplier = 1;
-                    target.Player.movement.pluginJumpMultiplier = 1;
-
-                    Main.Instance.DownedPlayers.Remove(target.CSteamID);
-                    Main.Instance.RevivedPlayers.Add(target.CSteamID, true);
-                    target.Player.life.tellHealth(target.CSteamID, Main.Instance.Configuration.Instance.DefibedPlayerHealth);
-
-                    List<Player> players = new List<Player>();
-                    PlayerTool.getPlayersInRadius(target.Position, 5, players);
-                    foreach (var player in players)
-                    {
-                        var ePlayer = UnturnedPlayer.FromPlayer(player);
-                        EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
-                    }
+                    EffectManager.askEffectClearByID(9771, ePlayer.Player.channel.GetOwnerTransportConnection());
                 }
-                if (reviver.Player.animator.gesture == EPlayerGesture.SURRENDER_START && reviver.Stance != EPlayerStance.CROUCH)
+            }
+
+            if (reviver.Player.animator.gesture != EPlayerGesture.SURRENDER_START ||
+                reviver.Stance == EPlayerStance.CROUCH) yield break;
+            {
+                target.Player.movement.pluginSpeedMultiplier = 1;
+                target.Player.movement.pluginJumpMultiplier = 1;
+
+                Main.Instance.RevivedPlayers.Add(target.CSteamID, true);
+                Main.Instance.DownedPlayers.Remove(target.CSteamID);
+                target.Player.life.tellHealth(target.CSteamID, Main.Instance.Configuration.Instance.RevivedPlayerHealth);
+
+                List<Player> players = new List<Player>();
+                PlayerTool.getPlayersInRadius(target.Position, 5, players);
+                foreach (var player in players)
                 {
-                    target.Player.movement.pluginSpeedMultiplier = 1;
-                    target.Player.movement.pluginJumpMultiplier = 1;
-
-                    Main.Instance.DownedPlayers.Remove(target.CSteamID);
-                    Main.Instance.RevivedPlayers.Add(target.CSteamID, true);
-                    target.Player.life.tellHealth(target.CSteamID, Main.Instance.Configuration.Instance.RevivedPlayerHealth);
-
-                    List<Player> players = new List<Player>();
-                    PlayerTool.getPlayersInRadius(target.Position, 5, players);
-                    foreach (var player in players)
-                    {
-                        var ePlayer = UnturnedPlayer.FromPlayer(player);
-                        EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
-                    }
+                    var ePlayer = UnturnedPlayer.FromPlayer(player);
+                    EffectManager.askEffectClearByID(9771, ePlayer.Player.channel.GetOwnerTransportConnection());
                 }
             }
         }

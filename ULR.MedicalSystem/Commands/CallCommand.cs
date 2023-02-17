@@ -35,14 +35,12 @@ namespace ULR.MedicalSystem.Commands
                 return;
             }
 
-            foreach(var client in Provider.clients)
+            foreach (var user in Provider.clients.Select(client => UnturnedPlayer.FromSteamPlayer(client))
+                         .Where(user => user.GetPermissions()
+                             .Any(perm => perm.Name == Main.Instance.Configuration.Instance.DownedReviveCall)))
             {
-                var user = UnturnedPlayer.FromSteamPlayer(client);
-
-                if(user.GetPermissions().Any(perm => perm.Name == Main.Instance.Configuration.Instance.DownedReviveCall))
-                {
-                    user.Player.quests.tellSetMarker(user.CSteamID, true, uPlayer.Position, "EMS Call!");
-                }
+                UnturnedChat.Say(user, $"{uPlayer.DisplayName} has requested your assistance at the marked location.");
+                user.Player.quests.tellSetMarker(user.CSteamID, true, uPlayer.Position, "EMS Call!");
             }
 
             UnturnedChat.Say(uPlayer, "You have now called the ems to your location");
