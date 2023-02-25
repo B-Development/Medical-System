@@ -81,6 +81,8 @@ namespace ULR.MedicalSystem
                         {
                             EffectManager.askEffectClearByID(9771, player.Player.channel.GetOwnerTransportConnection());
                         }
+
+                        shouldallow = true;
                     }
                 }
             }
