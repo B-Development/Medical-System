@@ -41,7 +41,6 @@ namespace ULR.MedicalSystem
             U.Events.OnPlayerDisconnected += Manager.OnPlayerLeave;
 
             ItemManager.onTakeItemRequested += Manager.OnPickupItem;
-            EffectManager.onEffectButtonClicked += Manager.OnButtonClicked;
             UnturnedPlayerEvents.OnPlayerUpdatePosition += Manager.OnPlayerMoved;
             UnturnedPlayerEvents.OnPlayerDeath += Manager.OnPlayerDie;
 
@@ -102,7 +101,6 @@ namespace ULR.MedicalSystem
             U.Events.OnPlayerDisconnected -= Manager.OnPlayerLeave;
 
             ItemManager.onTakeItemRequested -= Manager.OnPickupItem;
-            EffectManager.onEffectButtonClicked -= Manager.OnButtonClicked;
             UnturnedPlayerEvents.OnPlayerUpdatePosition -= Manager.OnPlayerMoved;
             UnturnedPlayerEvents.OnPlayerDeath -= Manager.OnPlayerDie;
 
