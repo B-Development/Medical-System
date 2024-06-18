@@ -1,5 +1,4 @@
-﻿using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -16,9 +15,9 @@ namespace ULR.MedicalSystem.Patches
     [HarmonyPatch("doDamage")]
     class DoDamagePatch
     {
-        public static bool Prefix(byte amount, Vector3 newRagdoll, EDeathCause newCause, ELimb newLimb, CSteamID newKiller, ref EPlayerKill kill, bool trackKill, ERagdollEffect newRagdollEffect, bool canCauseBleeding, PlayerLife __instance)
+        public static bool Prefix(byte amount, Vector3 newRagdoll, EDeathCause newCause, ELimb newLimb, CSteamID newKiller, ref EPlayerKill kill, bool trackKill, ERagdollEffect newRagdollEffect, bool canCauseBleeding, PlayerLife instance)
         {
-            var ply = __instance.channel.owner.player;
+            var ply = instance.channel.owner.player;
             var uPlayer = UnturnedPlayer.FromPlayer(ply);
             if (Main.Instance.ByPassMedical.ContainsKey(uPlayer.CSteamID))
             {
@@ -61,7 +60,7 @@ namespace ULR.MedicalSystem.Patches
                 EffectManager.sendUIEffect(9770, 9770, uPlayer.Player.channel.GetOwnerTransportConnection(), false, "You are injured", string.Empty, "Respawn in: " + Main.Instance.Configuration.Instance.DownedTimer + "s", "Suicide");
                 EffectManager.sendEffectClicked("Suicide_Button");
 
-                List<Player> players = new List<Player>();
+                var players = new List<Player>();
                 PlayerTool.getPlayersInRadius(uPlayer.Position, 5, players);
                 foreach (var p in players)
                 {
@@ -81,9 +80,9 @@ namespace ULR.MedicalSystem.Patches
                 uPlayer.Player.movement.pluginSpeedMultiplier = 1;
                 uPlayer.Player.movement.pluginJumpMultiplier = 1;
 
-                List<Player> u_players = new List<Player>();
-                PlayerTool.getPlayersInRadius(uPlayer.Position, 5, u_players);
-                foreach (var player in u_players)
+                var uPlayers = new List<Player>();
+                PlayerTool.getPlayersInRadius(uPlayer.Position, 5, uPlayers);
+                foreach (var player in uPlayers)
                 {
                     var ePlayer = UnturnedPlayer.FromPlayer(player);
                     EffectManager.askEffectClearByID(9771, ePlayer.CSteamID);
@@ -95,9 +94,9 @@ namespace ULR.MedicalSystem.Patches
         }
 
 
-        public static IEnumerator DownedInvincibility(CSteamID steam_id, int time)
+        public static IEnumerator DownedInvincibility(CSteamID steamID, int time)
         {
-            var pl = UnturnedPlayer.FromCSteamID(steam_id);
+            var pl = UnturnedPlayer.FromCSteamID(steamID);
 
             while (time > 0)
             {
@@ -105,42 +104,42 @@ namespace ULR.MedicalSystem.Patches
                 yield return new WaitForSeconds(1);
             }
 
-            Main.Instance.DownedInvincibility.Remove(steam_id);
+            Main.Instance.DownedInvincibility.Remove(steamID);
         }
 
-        public static void changeTimer(CSteamID steam_id, int time)
+        public static void ChangeTimer(CSteamID steamID, int time)
         {
-            EffectManager.askEffectClearByID(9770, steam_id);
-            EffectManager.sendUIEffect(9770, 9770, steam_id, false, "You are injured", string.Empty, "Respawn in: " + time + "s", "Suicide");
+            EffectManager.askEffectClearByID(9770, steamID);
+            EffectManager.sendUIEffect(9770, 9770, steamID, false, "You are injured", string.Empty, "Respawn in: " + time + "s", "Suicide");
             EffectManager.sendEffectClicked("Suicide_Button");
         }
 
-        public static IEnumerator DownTimer(CSteamID steam_id, int time)
+        public static IEnumerator DownTimer(CSteamID steamID, int time)
         {
-            var pl = UnturnedPlayer.FromCSteamID(steam_id);
+            var pl = UnturnedPlayer.FromCSteamID(steamID);
 
             while (time > 0)
             {
-                if (Main.Instance.DownedPlayers.ContainsKey(steam_id))
+                if (Main.Instance.DownedPlayers.ContainsKey(steamID))
                 {
-                    changeTimer(steam_id, (time));
+                    ChangeTimer(steamID, (time));
                     time--;
                     yield return new WaitForSeconds(1);
                 }
                 else
                 {
-                    Main.Instance.DownedPlayers.Remove(steam_id);
-                    EffectManager.askEffectClearByID(9770, UnturnedPlayer.FromCSteamID(steam_id).Player.channel.GetOwnerTransportConnection());
+                    Main.Instance.DownedPlayers.Remove(steamID);
+                    EffectManager.askEffectClearByID(9770, UnturnedPlayer.FromCSteamID(steamID).Player.channel.GetOwnerTransportConnection());
                     pl.Player.movement.pluginSpeedMultiplier = 1;
                     pl.Player.movement.pluginJumpMultiplier = 1;
 
                     var component = pl.GetComponent<DownedPlayerComonpent>();
-                    DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, pl.Position, 1000, 1, out EPlayerKill kill, false, false);
+                    DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, pl.Position, 1000, 1, out var kill, false, false);
 
                     Main.Instance.ByPassMedical.Add(pl.CSteamID, true);
 
-                    List<Player> players = new List<Player>();
-                    PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steam_id).Position, 5, players);
+                    var players = new List<Player>();
+                    PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steamID).Position, 5, players);
                     foreach (var player in players)
                     {
                         var ePlayer = UnturnedPlayer.FromPlayer(player);
@@ -150,16 +149,16 @@ namespace ULR.MedicalSystem.Patches
                 }
             }
 
-            if (!Main.Instance.DownedPlayers.ContainsKey(steam_id)) yield break;
+            if (!Main.Instance.DownedPlayers.ContainsKey(steamID)) yield break;
             {
-                Main.Instance.DownedPlayers.Remove(steam_id);
-                EffectManager.askEffectClearByID(9770, UnturnedPlayer.FromCSteamID(steam_id).Player.channel.GetOwnerTransportConnection());
+                Main.Instance.DownedPlayers.Remove(steamID);
+                EffectManager.askEffectClearByID(9770, UnturnedPlayer.FromCSteamID(steamID).Player.channel.GetOwnerTransportConnection());
                 pl.Player.movement.pluginSpeedMultiplier = 1;
                 pl.Player.movement.pluginJumpMultiplier = 1;
                 pl.Suicide();
 
                 var players = new List<Player>();
-                PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steam_id).Position, 5, players);
+                PlayerTool.getPlayersInRadius(UnturnedPlayer.FromCSteamID(steamID).Position, 5, players);
                 foreach (var ePlayer in players.Select(player => UnturnedPlayer.FromPlayer(player)))
                 {
                     EffectManager.askEffectClearByID(9771, ePlayer.Player.channel.GetOwnerTransportConnection());

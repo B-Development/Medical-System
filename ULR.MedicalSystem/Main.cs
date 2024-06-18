@@ -2,37 +2,29 @@
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Events;
-using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Steamworks;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Rocket.Unturned.Chat;
 using ULR.MedicalSystem.Events;
-using ULR.MedicalSystem.Patches;
-using UnityEngine;
 
 namespace ULR.MedicalSystem
 {
     public class Main : RocketPlugin<Configuration>
     {
-        public static Main Instance { get; set; }
+        public static Main Instance { get; private set; }
         public Dictionary<CSteamID, bool> DownedPlayers = new Dictionary<CSteamID, bool>();
         public Dictionary<CSteamID, bool> DownedInvincibility = new Dictionary<CSteamID, bool>();
         public Dictionary<CSteamID, bool> RevivedPlayers = new Dictionary<CSteamID, bool>();
-        public Dictionary<CSteamID, bool> ByPassMedical = new Dictionary<CSteamID, bool>();
+        public readonly Dictionary<CSteamID, bool> ByPassMedical = new Dictionary<CSteamID, bool>();
         public EventManager Manager { get; set; }
-        public Harmony harmony;
+        private Harmony _harmony;
 
         protected override void Load()
         {
             Instance = this;
 
-            harmony = new Harmony("unturnedliferp.medicalsystem");
-            harmony.PatchAll();
+            _harmony = new Harmony("unturnedliferp.medicalsystem");
+            _harmony.PatchAll();
 
             Manager = new EventManager(this);
 
@@ -54,7 +46,7 @@ namespace ULR.MedicalSystem
             RevivedPlayers = null;
 
             StopAllCoroutines();
-            harmony.UnpatchAll("unturnedliferp.medicalsystem");
+            _harmony.UnpatchAll("unturnedliferp.medicalsystem");
 
             U.Events.OnPlayerConnected -= Manager.OnPlayerJoined;
             U.Events.OnPlayerDisconnected -= Manager.OnPlayerLeave;

@@ -1,11 +1,7 @@
-﻿using Rocket.Core.Logging;
-using Rocket.Unturned.Player;
+﻿using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ULR.MedicalSystem.Components;
 
 namespace ULR.MedicalSystem.Events
@@ -26,7 +22,7 @@ namespace ULR.MedicalSystem.Events
             var component = uPlayer.GetComponent<DownedPlayerComonpent>();
             DamageTool.damage(component.Player.Player, component.newCause, component.newLimb, component.killer, uPlayer.Position, 1000, 1, out var kill, false, false);
 
-            List<Player> players = new List<Player>();
+            var players = new List<Player>();
             PlayerTool.getPlayersInRadius(uPlayer.Position, 5, players);
 
             foreach (var ePlayer in players.Select(UnturnedPlayer.FromPlayer))

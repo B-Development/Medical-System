@@ -1,11 +1,6 @@
 ﻿using HarmonyLib;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace ULR.MedicalSystem.Patches
@@ -14,14 +9,14 @@ namespace ULR.MedicalSystem.Patches
     [HarmonyPatch("simulate")]
     class StanceChangePatch
     {
-        public static void Prefix(PlayerStance __instance)
+        public static void Prefix(PlayerStance instance)
         {
-            var player = UnturnedPlayer.FromPlayer(__instance.player);
-            if (__instance.stance != EPlayerStance.PRONE && Main.Instance.DownedPlayers.ContainsKey(player.CSteamID))
+            var player = UnturnedPlayer.FromPlayer(instance.player);
+            if (instance.stance != EPlayerStance.PRONE && Main.Instance.DownedPlayers.ContainsKey(player.CSteamID))
             {
                 if (player.IsInVehicle)
                 {
-                    player.CurrentVehicle.forceRemovePlayer(out byte seat, player.CSteamID, out Vector3 pos, out byte angle);
+                    player.CurrentVehicle.forceRemovePlayer(out var seat, player.CSteamID, out var pos, out var angle);
                     VehicleManager.sendExitVehicle(player.CurrentVehicle, seat, pos, angle, true);
                 }
                 player.Player.channel.send("tellStance", player.CSteamID, (ESteamPacket)15, new object[1]

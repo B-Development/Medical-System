@@ -1,10 +1,5 @@
 ﻿using Rocket.Unturned.Player;
 using SDG.Unturned;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ULR.MedicalSystem.Events
 {
@@ -14,13 +9,13 @@ namespace ULR.MedicalSystem.Events
         {
             var player = UnturnedPlayer.FromPlayer(equipment.player);
 
-            if (manager.pluginInstance.DownedPlayers.ContainsKey(player.CSteamID))
+            if (manager.PluginInstance.DownedPlayers.ContainsKey(player.CSteamID))
             {
                 shouldAllow = false;
             }
         }
 
-        public static void OnPickupItem(this EventManager manager, Player player, byte x, byte y, uint instanceID, byte to_x, byte to_y, byte to_rot, byte to_page, ItemData itemData, ref bool shouldAllow)
+        public static void OnPickupItem(this EventManager manager, Player player, byte x, byte y, uint instanceID, byte toX, byte toY, byte toRot, byte toPage, ItemData itemData, ref bool shouldAllow)
         {
             var uplayer = UnturnedPlayer.FromPlayer(player);
 
